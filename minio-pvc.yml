@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minio-pvc-claim
+  namespace: minio
+spec:
+  storageClassName: objpool-minio-storage
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Ti

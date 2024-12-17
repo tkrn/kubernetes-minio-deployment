@@ -1,0 +1,61 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: minio
+  namespace: minio
+spec:
+  selector:
+    matchLabels:
+      app: minio
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: minio
+      namespace: minio
+    spec:
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: minio-pvc-claim
+      - name: minio-tls-secrets
+        secret:
+          secretName: minio-tls-secrets
+          items: 
+            - key: private.key
+              path: private.key
+            - key: public.crt
+              path: public.crt
+      containers:
+      - name: minio
+        image: minio/minio:latest
+        args:
+        - server
+        - /data
+        - --address
+        - ":9000"
+        - --console-address
+        - ":9001"
+        env:
+        - name: MINIO_ROOT_USER
+          valueFrom:
+            secretKeyRef:
+              name: minio-secrets
+              key: root_username
+        - name: MINIO_ROOT_PASSWORD 
+          valueFrom:
+            secretKeyRef:
+              name: minio-secrets
+              key: root_password 
+        ports:
+        - containerPort: 9000
+          hostPort: 9000
+        - containerPort: 9001
+          hostPort: 9001
+        volumeMounts:
+        - name: data
+          mountPath: "/data"
+        - name: minio-tls-secrets
+          mountPath: /root/.minio/certs/
+          readOnly: true
