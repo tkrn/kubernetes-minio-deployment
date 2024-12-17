@@ -45,4 +45,4 @@ microk8s kubectl create -f minio-deployment.yml
 microk8s kubectl create -f minio-svc.yml
 ```
 
-This is licensed under the [MIT license](LICENSE.md).
+This is licensed under the [MIT license](LICENSE).
